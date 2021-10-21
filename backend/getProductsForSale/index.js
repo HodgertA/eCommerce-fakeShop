@@ -1,7 +1,7 @@
 const DynamoDB = require('aws-sdk/clients/dynamodb');
 const DbUtils = require('../databaseManager');
 
-const tableName = process.env.TABLE_NAME;
+const tableName = process.env.ECOMMERCE_TABLE_NAME;
 const DB = new DynamoDB.DocumentClient();
 const dbService = new DbUtils(DB, tableName);
 

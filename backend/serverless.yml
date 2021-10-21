@@ -6,9 +6,35 @@ provider:
   region: ca-central-1
   lambdaHashingVersion: "20201221"
   environment: 
-    TABLE_NAME: "table"
+    ECOMMERCE_TABLE_NAME: "eCommerce-table"
+    USERPOOL_TABLE_NAME: "user-table"
+    ACCESS_TOKEN_SECRET: ${file(./config.yml):ACCESS_TOKEN_SECRET}
 
 functions:
+  createUser:
+    handler: createUser/index.handler
+    role: 
+      Fn::GetAtt:
+        - createUserRole
+        - Arn
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+
+  loginUser:
+    handler: loginUser/index.handler
+    role: 
+      Fn::GetAtt:
+        - loginUserRole
+        - Arn
+    events:
+      - http:
+          path: login
+          method: post
+          cors: true
+
   getProducts:
     handler: getProductsForSale/index.handler
     role: 
@@ -24,10 +50,25 @@ functions:
 resources:
   Resources:
 
+    userTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: ${self:provider.environment.USERPOOL_TABLE_NAME}
+        AttributeDefinitions:
+        - AttributeName: "email"
+          AttributeType: "S"
+        KeySchema:
+        - AttributeName: "email"
+          KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+          
+    
     eCommerceTable:
       Type: "AWS::DynamoDB::Table"
       Properties:
-        TableName: ${self:provider.environment.TABLE_NAME}
+        TableName: ${self:provider.environment.ECOMMERCE_TABLE_NAME}
         AttributeDefinitions:
         - AttributeName: "PK"
           AttributeType: "S"
@@ -156,3 +197,105 @@ resources:
                           - Ref: 'AWS::Region'
                           - Ref: 'AWS::AccountId'
                           - 'log-group:/aws/lambda/*:*:*'
+
+    loginUserRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: loginUserRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: Policy-loginUser
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: 'Allow'
+                  Action:
+                    - dynamodb:GetItem
+                  Resource:
+                    Fn::GetAtt:
+                      - userTable
+                      - Arn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:logs'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'log-group:/aws/lambda/*:*:*'
+
+    createUserRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: createUserRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: Policy-createUser
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: 'Allow'
+                  Action:
+                    - dynamodb:PutItem
+                  Resource:
+                    Fn::GetAtt:
+                      - userTable
+                      - Arn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:logs'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'log-group:/aws/lambda/*:*:*' 
+          - PolicyName: Policy-getUser
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: 'Allow'
+                  Action:
+                    - dynamodb:GetItem
+                  Resource:
+                    Fn::GetAtt:
+                      - userTable
+                      - Arn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:logs'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'log-group:/aws/lambda/*:*:*'
+        
+    
+    
