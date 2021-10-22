@@ -1,7 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import axios from 'axios';
-import {Navbar, Products, Cart, SignUp } from './components';
+import {Navbar, Products, Cart, SignUp, Login } from './components';
 import {BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import {Container} from 'react-bootstrap';
+
+import jwt from 'jsonwebtoken';
+
+import ProductsAPI from "./api/ProductsAPI";
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -10,10 +14,12 @@ const API = "https://i5d2y0hat5.execute-api.ca-central-1.amazonaws.com/dev/"
 const App = () => {
     const [products, setProducts] = useState([]);
     const [cartItems, setCartItems] = useState([]);
+    const [accessToken, setAccessToken] = useState('');
 
     useEffect(() => {
         getCartItems();
         getProducts();
+        getAccessToken();
     }, []);
 
     useEffect(() => {
@@ -22,16 +28,21 @@ const App = () => {
         }
     }, [cartItems]);
 
-    const getProducts = async () => {
-        const url = API + 'products'
-        try{
-            const response = await axios.get(url);
-            setProducts(response?.data);
-            // addItemToCart(products[0]);
-            // addItemToCart(products[1]);
+    useEffect(() => {
+        window.localStorage.setItem("accessToken", accessToken);
+    }, [accessToken]);
+
+    const getAccessToken = () => {
+        const accessToken = window.localStorage.getItem('accessToken');
+        if(accessToken){
+            setAccessToken(accessToken)
         }
-        catch(e){
-            console.log(e);
+    }
+
+    const getProducts = async () => {
+        const products = await ProductsAPI.getProducts();
+        if(products){
+            setProducts(products);
         }
     }
 
@@ -76,7 +87,6 @@ const App = () => {
                 );
             });
         }
-
     }
 
     const handleRemoveFromCart = async (productId) => {
@@ -95,8 +105,6 @@ const App = () => {
         setCartItems([]);
     }
 
-
-
     const numItemsInCart = () => {
         var numItemsInCart = 0;
 
@@ -106,10 +114,32 @@ const App = () => {
         return numItemsInCart;
     }
 
+    const setLoggedInUser = async (accessToken) => {
+        if(accessToken){
+            setAccessToken(accessToken.accessToken);
+        }
+    }
+
+    const logoutUser = () => {
+        setAccessToken("");
+    }
+
+    const isLoggedIn = () => {
+        var isLoggedIn = false;
+
+        if(accessToken){
+            const response = jwt.verify(accessToken, process.env.REACT_APP_ACCESS_TOKEN_SECRET);
+            console.log(response);
+            isLoggedIn = true;
+        }
+
+        return isLoggedIn;
+    }
+
     return (
         <Router>
             <div>
-                <Navbar totalItems={numItemsInCart()}/>
+                <Navbar totalItems={numItemsInCart()} isLoggedIn={isLoggedIn()}/>
                 <Switch>
                     <Route exact path="/">
                         <Products products={products} onAddToCart={handleAddToCart}/>
@@ -121,9 +151,21 @@ const App = () => {
                         handleUpdateCartQty={handleUpdateCartQty}
                         />
                     </Route>
+                    <Route exact path="/register">
+                        <Container className="d-flex align-items-center justify-content-center" style = {{minHeight: "100vh"}}>
+                            <div className="w-100" style={{maxWidth: "400px"}}>
+                                <SignUp setLoggedInUser={setLoggedInUser}/>
+                            </div>
+                        </Container>
+                    </Route>
+                    <Route exact path="/login">
+                        <Container className="d-flex align-items-center justify-content-center" style = {{minHeight: "100vh"}}>
+                            <div className="w-100" style={{maxWidth: "400px"}}>
+                                <Login setLoggedInUser={setLoggedInUser}/>
+                            </div>
+                        </Container>
+                    </Route>
                 </Switch>
-
-                
             </div>
         </Router>
     )

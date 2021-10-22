@@ -39,6 +39,10 @@ module.exports.handler = async (event, context, callback) => {
       callback(null, {
         statusCode: 200,
         body: body,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true,
+      }
       })
 
     } catch (e) {

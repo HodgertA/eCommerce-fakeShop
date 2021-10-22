@@ -7,7 +7,7 @@ import{ Link, useLocation } from 'react-router-dom';
 import logo from '../../assests/logo.png';
 import useStyles from './styles';
 
-const Navbar = ({ totalItems }) => {
+const Navbar = ({ totalItems, isLoggedIn }) => {
     const classes = useStyles();
     const location = useLocation();
 
@@ -20,14 +20,28 @@ const Navbar = ({ totalItems }) => {
                         Aidan's Faux-Shop
                     </Typography>
                     <div className={classes.grom} />
+                    {isLoggedIn ? (
+                            <Typography className="mr-2">
+                                <Link to="/myAccount">
+                                    My Account
+                                </Link>
+                            </Typography>
+                        ) : (
+                            <Typography className="mr-2">
+                                <Link to="/register">
+                                    Sign Up
+                                </Link>
+                            </Typography>
+                        )}
                     {location.pathname === '/' && (
-                    <div className={classes.button}>
-                        <IconButton component={Link} to="/cartItems" aria-label="Show cart items" color="inherit">
-                            <Badge badgeContent={totalItems} color="secondary">
-                                <ShoppingBasketOutlined />
-                            </Badge>
-                        </IconButton>
-                    </div>)}
+                        <div className={classes.button}>
+                            <IconButton component={Link} to="/cartItems" aria-label="Show cart items" color="inherit">
+                                <Badge badgeContent={totalItems} color="secondary">
+                                    <ShoppingBasketOutlined />
+                                </Badge>
+                            </IconButton>
+                        </div>
+                    )}
                 </Toolbar>
 
             </AppBar>
