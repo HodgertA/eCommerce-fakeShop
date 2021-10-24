@@ -47,6 +47,54 @@ functions:
           method: get
           cors: true
 
+  updateCartItem:
+    handler: updateCartItem/index.handler
+    role: 
+      Fn::GetAtt:
+        - updateItemRole
+        - Arn
+    events:
+      - http:
+          path: cartItems/{productId}
+          method: put
+          cors: true
+
+  getCartItems:
+    handler: getCartItems/index.handler
+    role: 
+      Fn::GetAtt:
+        - queryItemRole
+        - Arn
+    events:
+      - http:
+          path: cartItems/
+          method: get
+          cors: true
+
+  deleteCartItem:
+    handler: deleteCartItem/index.handler
+    role: 
+      Fn::GetAtt:
+        - deleteItemRole
+        - Arn
+    events:
+      - http:
+          path: cartItems/{productId}
+          method: delete
+          cors: true
+
+  clearCartItems:
+    handler: clearCartItems/index.handler
+    role: 
+      Fn::GetAtt:
+        - batchDeleteRole
+        - Arn
+    events:
+      - http:
+          path: cartItems
+          method: delete
+          cors: true
+
 resources:
   Resources:
 
@@ -62,8 +110,7 @@ resources:
           KeyType: "HASH"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-          
+          WriteCapacityUnits: 1 
     
     eCommerceTable:
       Type: "AWS::DynamoDB::Table"
@@ -82,7 +129,9 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+         
           
+
     createItemRole:
       Type: AWS::IAM::Role
       Properties:
@@ -135,7 +184,7 @@ resources:
               Action:
                 - sts:AssumeRole
         Policies:
-          - PolicyName: Policy-getItem
+          - PolicyName: Policy-queryItem
             PolicyDocument:
               Version: '2012-10-17'
               Statement:
@@ -159,6 +208,43 @@ resources:
                           - Ref: 'AWS::AccountId'
                           - 'log-group:/aws/lambda/*:*:*'
 
+    updateItemRole:
+          Type: AWS::IAM::Role
+          Properties:
+            RoleName: updateItemRole
+            AssumeRolePolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Principal:
+                    Service:
+                      - lambda.amazonaws.com
+                  Action:
+                    - sts:AssumeRole
+            Policies:
+              - PolicyName: Policy-updateItem
+                PolicyDocument:
+                  Version: '2012-10-17'
+                  Statement:
+                    - Effect: 'Allow'
+                      Action:
+                        - dynamodb:UpdateItem
+                      Resource:
+                        Fn::GetAtt:
+                          - eCommerceTable
+                          - Arn
+                    - Effect: Allow
+                      Action:
+                        - logs:CreateLogGroup
+                        - logs:CreateLogStream
+                        - logs:PutLogEvents
+                      Resource:
+                        - 'Fn::Join':
+                            - ':'
+                            - - 'arn:aws:logs'
+                              - Ref: 'AWS::Region'
+                              - Ref: 'AWS::AccountId'
+                              - 'log-group:/aws/lambda/*:*:*'
 
     getItemRole:
       Type: AWS::IAM::Role
@@ -181,6 +267,105 @@ resources:
                 - Effect: 'Allow'
                   Action:
                     - dynamodb:GetItem
+                  Resource:
+                    Fn::GetAtt:
+                      - eCommerceTable
+                      - Arn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:logs'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'log-group:/aws/lambda/*:*:*'
+
+    deleteItemRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: deleteItemRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: Policy-deleteItem
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: 'Allow'
+                  Action:
+                    - dynamodb:DeleteItem
+                  Resource:
+                    Fn::GetAtt:
+                      - eCommerceTable
+                      - Arn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:logs'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'log-group:/aws/lambda/*:*:*'
+
+    batchDeleteRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: batchDeleteRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: Policy-deleteItems
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: 'Allow'
+                  Action:
+                    - dynamodb:DeleteItem
+                  Resource:
+                    Fn::GetAtt:
+                      - eCommerceTable
+                      - Arn
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:logs'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'log-group:/aws/lambda/*:*:*'
+          - PolicyName: Policy-getItems
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: 'Allow'
+                  Action:
+                    - dynamodb:Query
                   Resource:
                     Fn::GetAtt:
                       - eCommerceTable

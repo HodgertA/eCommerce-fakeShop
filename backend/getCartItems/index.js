@@ -5,19 +5,28 @@ const tableName = process.env.ECOMMERCE_TABLE_NAME;
 const DB = new DynamoDB.DocumentClient();
 const dbService = new DbUtils(DB, tableName);
 
+const { authenticateToken } = require('../common/authenticateToken');
 
 module.exports.handler = async (event, context, callback) => {
+    const user = authenticateToken(event.headers);
     try {
-        const response = await getProductsForSale();
+
+        if(user?.email) {
+            const response = await getCartItems(user.email);
+            callback(null, {
+                statusCode: 200,
+                body: JSON.stringify(response),
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Credentials': true,
+                }
+            });
+        }
         callback(null, {
-            statusCode: 200,
-            body: JSON.stringify(response),
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': true,
-            }
+            statusCode: 401,
+            body: JSON.stringify("Unauthorized"),
         });
-    } 
+    }
     catch (e) {
         console.log(e);
         callback(null, {
@@ -27,17 +36,18 @@ module.exports.handler = async (event, context, callback) => {
     }
 };
 
-async function getProductsForSale(){
+async function getCartItems(user){
     const expression =  '#pk = :pk AND begins_with(#sk,:sk) ';
     const names = {
         '#pk': 'PK',
         '#sk': 'SK',
     };
         const values = {
-        ':pk': 'product',
-        ':sk': 'product',
+        ':pk': user,
+        ':sk': 'cart',
     };
 
     const response = await dbService.queryItem(expression, names, values);
     return response?.Items;
 }
+module.exports.getCartItems = getCartItems;   
