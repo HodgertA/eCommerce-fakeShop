@@ -41,18 +41,20 @@ module.exports.handler = async (event, context, callback) => {
 
 async function updateCartItem(email, cartItem){
     const key = {PK: email, SK: `cart#${cartItem.productId}`};
-    const expression =  'SET #productId = :productId, #name = :name, #price = :price ADD #quantity :quantity';
+    const expression =  'SET #productId = :productId, #name = :name, #image = :image, #price = :price ADD #quantity :quantity';
     const names = {
         '#productId': 'productId',
         '#name': 'name',
         '#price': 'price',
         '#quantity': 'quantity',
+        '#image': 'image'
     };
     const values = {
         ':productId': cartItem.productId,
         ':name': cartItem.name,
         ':price': cartItem.price,
         ':quantity': cartItem.quantity,
+        ':image': cartItem.image,
     };
 
     await dbService.updateItem(expression, key, names, values);

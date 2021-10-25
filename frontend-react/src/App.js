@@ -3,21 +3,18 @@ import {Navbar, Products, Cart, SignUp, Login } from './components';
 import {BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import {Container} from 'react-bootstrap';
 
-import jwt from 'jsonwebtoken';
-
 import ProductsAPI from "./api/ProductsAPI";
+import CartItemsAPI from "./api/CartItemsAPI"
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-const API = "https://i5d2y0hat5.execute-api.ca-central-1.amazonaws.com/dev/"
-
 const App = () => {
     const [products, setProducts] = useState([]);
-    const [cartItems, setCartItems] = useState([]);
+    const [cartItems, setCartItems] = useState(null);
     const [accessToken, setAccessToken] = useState('');
 
     useEffect(() => {
-        getCartItems();
+        getLocalCartItems();
         getProducts();
         getAccessToken();
     }, []);
@@ -30,33 +27,40 @@ const App = () => {
 
     useEffect(() => {
         window.localStorage.setItem("accessToken", accessToken);
+
+        const updateCartItems = async () => {
+            if(accessToken && accessToken!=="null") {
+                const cart = await CartItemsAPI.getCartItems(accessToken);
+                setCartItems(cart);
+            }
+        }
+
+        updateCartItems();
     }, [accessToken]);
 
     const getAccessToken = () => {
-        const accessToken = window.localStorage.getItem('accessToken');
-        if(accessToken){
-            setAccessToken(accessToken)
-        }
+        const newAccessToken = window.localStorage.getItem('accessToken');
+        setAccessToken(newAccessToken);
     }
 
     const getProducts = async () => {
-        const products = await ProductsAPI.getProducts();
-        if(products){
-            setProducts(products);
+        const productsForSale = await ProductsAPI.getProducts();
+        if(productsForSale){
+            setProducts(productsForSale);
         }
     }
 
-    const getCartItems = async () => {
-        //if logged in
-            //get cartItems and setCartItems
-
-        //else get Items from local session
-            const savedCartItems = JSON.parse(window.localStorage.getItem('cartItems'));
-            if(savedCartItems){
-                setCartItems(savedCartItems);
-            }
+    const getLocalCartItems = async () => {
+        const savedCartItems = JSON.parse(window.localStorage.getItem('cartItems'));
+            
+        if(savedCartItems) {
+            setCartItems(savedCartItems);
+        }
+        else{
+            setCartItems([]);
+        }
     }
-
+    
     const handleAddToCart = async (cartItem) => {
         setCartItems(prevCartItems => {
             const isItemInCart = prevCartItems.find(item => item.productId === cartItem.productId);
@@ -71,44 +75,65 @@ const App = () => {
             // First time the item is added
             return [...prevCartItems, { ...cartItem, quantity: 1 }];
         });
+
+        if(isLoggedIn()) {
+            await CartItemsAPI.updateCartItem(cartItem, 1, accessToken);
+        }
     }
 
-    const handleUpdateCartQty = async (productId, quantity) => {
-
-        if(quantity < 1 ){
+    const handleUpdateCartQty = async (productId, quantityChange) => {
+        
+        const updateIndex = cartItems.findIndex(item => item.productId === productId);
+        const newQuantity = cartItems[updateIndex].quantity + quantityChange;
+        
+        console.log(newQuantity);
+        if(newQuantity < 1) {
             handleRemoveFromCart(productId);
         }
-        else{
+
+        else {
             setCartItems(prevCartItems => {
                 return prevCartItems.map(item => 
                     item.productId === productId
-                    ? { ...item, quantity: quantity}
+                    ? { ...item, quantity: newQuantity}
                     : item
                 );
             });
+            if(isLoggedIn()) {
+                await CartItemsAPI.updateCartItem(cartItems[updateIndex], quantityChange, accessToken);
+            }
         }
     }
 
     const handleRemoveFromCart = async (productId) => {
         var cartItemsCopy = [...cartItems];
-        const removeIndex = cartItemsCopy.findIndex(item => item.productId == productId);
-        
+        const removeIndex = cartItemsCopy.findIndex(item => item.productId === productId);
         
         if (removeIndex > -1) {
             cartItemsCopy.splice(removeIndex, 1);
           }
 
         setCartItems(cartItemsCopy);
+        if(isLoggedIn()) {
+            await CartItemsAPI.deleteCartItem(productId, accessToken);
+        }
     }
 
     const handleEmptyCart = async () => {
         setCartItems([]);
+        if(isLoggedIn()) {
+            await CartItemsAPI.clearCartItems(accessToken)
+        }
     }
 
     const numItemsInCart = () => {
+        if (!cartItems){
+            return 0;
+        }
+
         var numItemsInCart = 0;
 
-        for (const cartItem of cartItems){
+        for (const cartItem of cartItems) {
             numItemsInCart += cartItem.quantity;
         }
         return numItemsInCart;
@@ -125,15 +150,12 @@ const App = () => {
     }
 
     const isLoggedIn = () => {
-        var isLoggedIn = false;
-
-        if(accessToken){
-            const response = jwt.verify(accessToken, process.env.REACT_APP_ACCESS_TOKEN_SECRET);
-            console.log(response);
-            isLoggedIn = true;
+        if(accessToken && accessToken!=="null") {
+            return true;
         }
-
-        return isLoggedIn;
+        else {
+            return false;
+        }
     }
 
     return (
