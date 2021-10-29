@@ -9,6 +9,7 @@ provider:
     ECOMMERCE_TABLE_NAME: "eCommerce-table"
     USERPOOL_TABLE_NAME: "user-table"
     ACCESS_TOKEN_SECRET: ${file(./config.yml):ACCESS_TOKEN_SECRET}
+    STRIPE_SECRET_KEY: ${file(./config.yml):STRIPE_SECRET_KEY}
 
 functions:
   createUser:
@@ -93,6 +94,18 @@ functions:
       - http:
           path: cartItems
           method: delete
+          cors: true
+
+  createPaymentIntent:
+    handler: createPaymentIntent/index.handler
+    role: 
+      Fn::GetAtt:
+        - paymentIntentRole
+        - Arn
+    events:
+      - http:
+          path: paymentIntents
+          method: post
           cors: true
 
 resources:
@@ -481,6 +494,38 @@ resources:
                           - Ref: 'AWS::Region'
                           - Ref: 'AWS::AccountId'
                           - 'log-group:/aws/lambda/*:*:*'
+
+    paymentIntentRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: paymentIntentRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: Policy-paymentIntent
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:logs'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'log-group:/aws/lambda/*:*:*'
+
         
     
     
