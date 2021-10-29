@@ -7,11 +7,11 @@ const CartItem = ({item, onUpdateCartQty, onRemoveFromCart}) => {
     const classes = useStyles();
 
     return (
-        <Card>
+        <Card className="cart-tiem">
             <CardMedia image={item.image} alt={item.name} className={classes.media} />
             <CardContent className={classes.cardContent}>
                 <Typography variant="h4">{item.name}</Typography>
-                <Typography variant="h5">${item.price*item.quantity}</Typography>
+                <Typography variant="h5">${(item.price*item.quantity).toFixed(2)}</Typography>
             </CardContent>
             <CardActions className={classes.cardActions}>
                 <div className={classes.buttons}>

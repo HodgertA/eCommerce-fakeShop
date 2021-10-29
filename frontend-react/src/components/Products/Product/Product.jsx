@@ -16,7 +16,7 @@ const Product = ({ product, onAddToCart }) => {
                             {product.name}
                         </Typography>
                         <Typography variant='h5'>
-                            ${product.price}
+                            ${product.price.toFixed(2)}
                         </Typography>
                     </div>
                     <Typography variant='body2' color="textSecondary">

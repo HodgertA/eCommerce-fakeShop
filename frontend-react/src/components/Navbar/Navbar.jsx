@@ -26,12 +26,15 @@ const Navbar = ({ totalItems, isLoggedIn }) => {
                                     My Account
                                 </Link>
                             </Typography>
-                        ) : (
+                        ) : location.pathname !== '/register' &&  location.pathname !== '/login' ?(
                             <Typography className="mr-2">
                                 <Link to="/register">
                                     Sign Up
                                 </Link>
                             </Typography>
+                        ): (
+                            <>
+                            </>
                         )}
                     {location.pathname === '/' && (
                         <div className={classes.button}>
