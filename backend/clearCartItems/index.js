@@ -8,7 +8,7 @@ module.exports.handler = async (event, context, callback) => {
     
     try {
         if(user?.email) {
-            await clearCartItems("test123@gmail.com");
+            await clearCartItems(user.email);
 
             callback(null, {
                 statusCode: 200,
