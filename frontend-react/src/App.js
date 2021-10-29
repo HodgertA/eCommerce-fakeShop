@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Navbar, Products, Cart, SignUp, Login } from './components';
+import {Navbar, Products, Cart, SignUp, Login, Checkout } from './components';
 import {BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import {Container} from 'react-bootstrap';
 
@@ -59,6 +59,12 @@ const App = () => {
         else{
             setCartItems([]);
         }
+    }
+
+    const handleCaptureCheckout = async (paymentIntent) => {
+        //create order
+        await handleEmptyCart()
+
     }
     
     const handleAddToCart = async (cartItem) => {
@@ -186,6 +192,10 @@ const App = () => {
                                 <Login setLoggedInUser={setLoggedInUser}/>
                             </div>
                         </Container>
+                    </Route>
+                    <Route exact path="/checkout">
+                        <Checkout cartItems={cartItems} onCaptureCheckout={handleCaptureCheckout}
+                     />
                     </Route>
                 </Switch>
             </div>
