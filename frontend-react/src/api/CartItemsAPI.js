@@ -52,7 +52,6 @@ class CartItemsAPI{
             'Authorization': `Bearer ${token}`
         };
         const url = API + cartItem.productId;
-        console.log(url);
 
         const body = {
             price: cartItem.price,

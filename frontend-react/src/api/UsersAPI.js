@@ -4,7 +4,7 @@ require('dotenv').config();
 const baseURL = process.env.REACT_APP_BASE_URL;
 const API = baseURL + '/users';
 
-class UserAPI{
+class UsersAPI{
     static async regitserUser(email, password){
         const body = {email: email, password: password};
         try{
@@ -16,4 +16,4 @@ class UserAPI{
         }
     }
 }
-export default UserAPI;
+export default UsersAPI;

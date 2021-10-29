@@ -5,8 +5,9 @@ import {Container} from 'react-bootstrap';
 
 import ProductsAPI from "./api/ProductsAPI";
 import CartItemsAPI from "./api/CartItemsAPI"
+import OrdersAPI from './api/OrdersAPI';
 
-import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
     const [products, setProducts] = useState([]);
@@ -61,10 +62,21 @@ const App = () => {
         }
     }
 
-    const handleCaptureCheckout = async (paymentIntent) => {
-        //create order
-        await handleEmptyCart()
+    const handleCaptureCheckout = async (paymentMethodId, shippingData, amount) => {
+        let token;
+        if(isLoggedIn){
+            token = accessToken;
+        }
 
+        const { error } = await OrdersAPI.processCheckout(paymentMethodId, cartItems, shippingData, amount, token);
+        
+        if(error) {
+            throw(new Error(error));
+        }
+        else{
+            await handleEmptyCart();
+        }
+        
     }
     
     const handleAddToCart = async (cartItem) => {
@@ -92,7 +104,6 @@ const App = () => {
         const updateIndex = cartItems.findIndex(item => item.productId === productId);
         const newQuantity = cartItems[updateIndex].quantity + quantityChange;
         
-        console.log(newQuantity);
         if(newQuantity < 1) {
             handleRemoveFromCart(productId);
         }

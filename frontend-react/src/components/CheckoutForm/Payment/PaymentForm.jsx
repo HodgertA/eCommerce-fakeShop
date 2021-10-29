@@ -3,14 +3,13 @@ import { Typography, Button, Divider } from '@material-ui/core';
 import { Elements, CardElement, ElementsConsumer } from '@stripe/react-stripe-js';
 import { loadStripe } from "@stripe/stripe-js";
 
-import Review from './Review';
-import PaymentIntentsAPI from '../../api/PaymentIntentsAPI';
+import OrderReview from './OrderReview';
 
 const stripePromise = loadStripe('pk_test_51JpQj5FWucyQVser8v1mSuaSZNhk6OGo2VY6KDmigx6NwoOJCrqd3S8Aln0jrc6lXT7S8iWu1drwbJ5A2hrYR75U00Byajeu3x');
 
-const PaymentForm = ({ cartItems, backStep, onCaptureCheckout, nextStep, paymentIsLoading, setPaymentError }) => {
+const PaymentForm = ({shippingData, cartItems, backStep, onCaptureCheckout, nextStep, paymentIsLoading, setPaymentError }) => {
 
-    const calculateSubtotal = () => {
+    const calculateTotal = () => {
         var subtotal = 0;
 
         for (const cartItem of cartItems){
@@ -25,13 +24,13 @@ const PaymentForm = ({ cartItems, backStep, onCaptureCheckout, nextStep, payment
 
         if(!stripe || !elements) return;
 
-        
-
         const cardElement = elements.getElement(CardElement);
-        const clientSecret = await PaymentIntentsAPI.createPaymentIntent(calculateSubtotal());
-
         try {
-            const {error, paymentIntent} = await stripe.handleCardPayment(clientSecret.clientSecret, cardElement);
+            const {error, paymentMethod} = await stripe.createPaymentMethod({
+                type: "card",
+                card: cardElement,
+            });
+
             nextStep();
             paymentIsLoading(true);
             
@@ -39,11 +38,11 @@ const PaymentForm = ({ cartItems, backStep, onCaptureCheckout, nextStep, payment
                 setPaymentError(error.message);
             }
             else{
-                await onCaptureCheckout(paymentIntent);
+                await onCaptureCheckout(paymentMethod.id, shippingData, calculateTotal())
             }
         }
         catch(e){
-            setPaymentError(e);
+            setPaymentError(e.message);
         }
 
         paymentIsLoading(false);
@@ -51,7 +50,7 @@ const PaymentForm = ({ cartItems, backStep, onCaptureCheckout, nextStep, payment
 
     return (
         <>
-            <Review cartItems={cartItems} calculateSubtotal={calculateSubtotal} />
+            <OrderReview cartItems={cartItems} calculateTotal={calculateTotal} />
             <Divider />
             <Typography variant="h6" gutterBottom style={{margin:'20px 0'}}>Payment method</Typography>
             <Elements stripe={stripePromise}>
@@ -63,7 +62,7 @@ const PaymentForm = ({ cartItems, backStep, onCaptureCheckout, nextStep, payment
                             <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                 <Button variant="outlined" onClick={backStep}>Back</Button>
                                 <Button type="submit" variant="contained" disabled={!stripe} color="primary">
-                                    Pay ${calculateSubtotal().toFixed(2)}
+                                    Pay ${calculateTotal().toFixed(2)}
                                 </Button>
                             </div>
                         </form>

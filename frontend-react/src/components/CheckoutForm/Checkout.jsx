@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import {Paper, Stepper, Step, StepLabel, Typography, Divider, Button, CircularProgress } from "@material-ui/core";
 import { Link } from "react-router-dom"
 import useStyles from './styles';
-import AddressForm from '../AddressForm';
-import PaymentForm from '../PaymentForm';
+import AddressForm from './Shipping/AddressForm';
+import PaymentForm from './Payment/PaymentForm';
 
 const steps = ['Shipping address', 'Payment details']
 
@@ -43,7 +43,12 @@ const Checkout = ({cartItems, onCaptureCheckout }) => {
     if(error){
         Confirmation = () => (
             <>
-                <Typography variant="h5">We were unable to process your order: {error}</Typography>
+                <div>
+                    <Typography variant="h5">We were unable to process your order</Typography>
+                    <Divider className={classes.divider} />
+                    <Typography variant="subtitle2">{error}</Typography>
+                </div>
+                <br />
                 <Button component={Link} to="/" variant="outlined" type="button">Back to Home</Button>
             </>
         )

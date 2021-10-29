@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Form, Button, Card, Alert } from 'react-bootstrap';
 import { Link, useHistory } from 'react-router-dom'; 
 
-import UserAPI from "../../api/UserAPI";
+import UsersAPI from "../../api/UsersAPI";
 
 
 const SignUp = ({ setLoggedInUser }) => {
@@ -23,7 +23,7 @@ const SignUp = ({ setLoggedInUser }) => {
         try {
             setError('');
             setLoading(true);
-            const response = await UserAPI.regitserUser(emailRef.current.value, passwordRef.current.value)
+            const response = await UsersAPI.regitserUser(emailRef.current.value, passwordRef.current.value)
             console.log(response);
             if(response.emailExists){
                 setError("An account with this email already exists")
