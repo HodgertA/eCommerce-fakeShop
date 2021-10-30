@@ -1,23 +1,20 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { Typography, Button, Divider } from '@material-ui/core';
 import { Elements, CardElement, ElementsConsumer } from '@stripe/react-stripe-js';
 import { loadStripe } from "@stripe/stripe-js";
-
 import OrderReview from './OrderReview';
+
+import { CartContext } from '../../../contexts/CartContext';
+import { AuthContext } from '../../../contexts/AuthContext';
+
+import isLoggedIn from "../../../shared/generalUtils";
+import OrdersAPI from "../../../api/OrdersAPI";
 
 const stripePromise = loadStripe('pk_test_51JpQj5FWucyQVser8v1mSuaSZNhk6OGo2VY6KDmigx6NwoOJCrqd3S8Aln0jrc6lXT7S8iWu1drwbJ5A2hrYR75U00Byajeu3x');
 
-const PaymentForm = ({shippingData, cartItems, backStep, onCaptureCheckout, nextStep, paymentIsLoading, setPaymentError }) => {
-
-    const calculateTotal = () => {
-        var subtotal = 0;
-
-        for (const cartItem of cartItems){
-            subtotal += cartItem.price * cartItem.quantity;
-        }
-        return subtotal;
-    }
-
+const PaymentForm = ({shippingData, backStep, nextStep, paymentIsLoading, setPaymentError }) => {
+    const { accessToken } = useContext(AuthContext);
+    const { cartItems, setCartItems } = useContext(CartContext);
 
     const handleSubmit = async (event, elements, stripe) =>{
         event.preventDefault();
@@ -38,7 +35,7 @@ const PaymentForm = ({shippingData, cartItems, backStep, onCaptureCheckout, next
                 setPaymentError(error.message);
             }
             else{
-                await onCaptureCheckout(paymentMethod.id, shippingData, calculateTotal())
+                await handleCaptureCheckout(paymentMethod.id, shippingData, calculateTotal())
             }
         }
         catch(e){
@@ -46,6 +43,31 @@ const PaymentForm = ({shippingData, cartItems, backStep, onCaptureCheckout, next
         }
 
         paymentIsLoading(false);
+    }
+
+    const handleCaptureCheckout = async (paymentMethodId, shippingData, amount) => {
+        let token;
+        if(isLoggedIn(accessToken)){
+            token = accessToken;
+        }
+
+        const { error } = await OrdersAPI.processCheckout(paymentMethodId, cartItems, shippingData, amount, token);
+        
+        if(error) {
+            throw(new Error(error));
+        }
+        else{
+            setCartItems([]);
+        }
+    }
+
+    const calculateTotal = () => {
+        var subtotal = 0;
+
+        for (const cartItem of cartItems){
+            subtotal += cartItem.price * cartItem.quantity;
+        }
+        return subtotal;
     }
 
     return (

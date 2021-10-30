@@ -1,15 +1,34 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { AppBar, Toolbar, IconButton, Badge, Typography } from '@material-ui/core';
 import { ShoppingBasketOutlined } from '@material-ui/icons';
 import{ Link, useLocation } from 'react-router-dom';
-
-
 import logo from '../../assests/logo.png';
-import useStyles from './styles';
 
-const Navbar = ({ totalItems, isLoggedIn }) => {
+import { CartContext } from '../../contexts/CartContext';
+import { AuthContext } from '../../contexts/AuthContext';
+
+import useStyles from './styles';
+import isLoggedIn from "../../shared/generalUtils";
+
+const Navbar = () => {
     const classes = useStyles();
     const location = useLocation();
+
+    const { accessToken } = useContext(AuthContext);
+    const { cartItems } = useContext(CartContext);
+
+    const numItemsInCart = () => {
+        if (!cartItems){
+            return 0;
+        }
+
+        var numItemsInCart = 0;
+
+        for (const cartItem of cartItems) {
+            numItemsInCart += cartItem.quantity;
+        }
+        return numItemsInCart;
+    }
 
     return (
         <>
@@ -20,7 +39,7 @@ const Navbar = ({ totalItems, isLoggedIn }) => {
                         Aidan's Faux-Shop
                     </Typography>
                     <div className={classes.grom} />
-                    {isLoggedIn ? (
+                    {isLoggedIn(accessToken) ? (
                             <Typography className="mr-2">
                                 <Link to="/myAccount">
                                     My Account
@@ -39,7 +58,7 @@ const Navbar = ({ totalItems, isLoggedIn }) => {
                     {location.pathname === '/' && (
                         <div className={classes.button}>
                             <IconButton component={Link} to="/cartItems" aria-label="Show cart items" color="inherit">
-                                <Badge badgeContent={totalItems} color="secondary">
+                                <Badge badgeContent={numItemsInCart()} color="secondary">
                                     <ShoppingBasketOutlined />
                                 </Badge>
                             </IconButton>

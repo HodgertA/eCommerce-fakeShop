@@ -1,15 +1,19 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 import { Form, Button, Card, Alert } from 'react-bootstrap';
 import { Link, useHistory } from 'react-router-dom';
+import { AuthContext } from '../../contexts/AuthContext';
 
 import LoginAPI from "../../api/LoginAPI";
 
-
 const Login = ({ setLoggedInUser }) => {
+    const { setAccessToken } = useContext(AuthContext);
+
     const emailRef = useRef();
     const passwordRef = useRef();
+
     const [error, setError] =  useState('');
     const [loading, setLoading] =  useState(false);
+
     const history = useHistory();
 
     async function handleSubmit(e) {
@@ -18,13 +22,13 @@ const Login = ({ setLoggedInUser }) => {
         try {
             setError('');
             setLoading(true);
-            const response = await LoginAPI.loginUser(emailRef.current.value, passwordRef.current.value)
-            console.log(response);
+            const response = await LoginAPI.loginUser(emailRef.current.value, passwordRef.current.value);
+
             if(response.loginFailed){
                 setError(response.loginFailed)
             }
             else {
-                await setLoggedInUser(response)
+                setAccessToken(response)
                 history.push('/');
             }
         }

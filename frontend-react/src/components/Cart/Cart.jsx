@@ -1,12 +1,74 @@
-import React from 'react';
-import useStyles from './styles';
+import React, {useContext} from 'react';
 import { Container, Typography, Button, Grid } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import CartItem from './CartItem/CartItem'
 
-const Cart = ({ cartItems, handleUpdateCartQty, handleRemoveFromCart, handleEmptyCart }) => {
+import CartItem from './CartItem/CartItem'
+import CartItemsAPI from "../../api/CartItemsAPI"
+import { CartContext } from '../../contexts/CartContext';
+import { AuthContext } from '../../contexts/AuthContext';
+
+import useStyles from './styles';
+import isLoggedIn from '../../shared/generalUtils';
+
+const Cart = () => {
     const classes = useStyles();
+
+    const { accessToken } = useContext(AuthContext);
+    const { cartItems, setCartItems } = useContext(CartContext);
+
     const isEmpty = cartItems ? !cartItems.length : true;
+
+    const handleUpdateCartQty = async (productId, quantityChange) => {
+        const updateIndex = cartItems.findIndex(item => item.productId === productId);
+        const newQuantity = cartItems[updateIndex].quantity + quantityChange;
+        
+        if(newQuantity < 1) {
+            handleRemoveFromCart(productId);
+        }
+
+        else {
+            setCartItems(prevCartItems => {
+                return prevCartItems.map(item => 
+                    item.productId === productId
+                    ? { ...item, quantity: newQuantity}
+                    : item
+                );
+            });
+            if(isLoggedIn(accessToken)) {
+                await CartItemsAPI.updateCartItem(cartItems[updateIndex], quantityChange, accessToken);
+            }
+        }
+    }
+
+    const handleRemoveFromCart = async (productId) => {
+        var cartItemsCopy = [...cartItems];
+        const removeIndex = cartItemsCopy.findIndex(item => item.productId === productId);
+        
+        if (removeIndex > -1) {
+            cartItemsCopy.splice(removeIndex, 1);
+          }
+
+        setCartItems(cartItemsCopy);
+        if(isLoggedIn(accessToken)) {
+            await CartItemsAPI.deleteCartItem(productId, accessToken);
+        }
+    }
+
+    const handleEmptyCart = async () => {
+        setCartItems([]);
+        if(isLoggedIn(accessToken)) {
+            await CartItemsAPI.clearCartItems(accessToken)
+        }
+    }
+
+    const calculateSubtotal = () => {
+        var subtotal = 0;
+
+        for (const cartItem of cartItems){
+            subtotal += cartItem.price * cartItem.quantity;
+        }
+        return subtotal;
+    }
 
     const EmptyCart = () => (
         <Typography variant="subtitle1"> You have no items in your shopping cart, {<Link to="/">start by adding some! </Link>}
@@ -34,15 +96,6 @@ const Cart = ({ cartItems, handleUpdateCartQty, handleRemoveFromCart, handleEmpt
             </div>
         </>
     )
-
-    const calculateSubtotal = () => {
-        var subtotal = 0;
-
-        for (const cartItem of cartItems){
-            subtotal += cartItem.price * cartItem.quantity;
-        }
-        return subtotal;
-    }
 
     return (
         <Container>

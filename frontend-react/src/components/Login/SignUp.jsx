@@ -1,16 +1,20 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 import { Form, Button, Card, Alert } from 'react-bootstrap';
 import { Link, useHistory } from 'react-router-dom'; 
 
 import UsersAPI from "../../api/UsersAPI";
-
+import { AuthContext } from '../../contexts/AuthContext';
 
 const SignUp = ({ setLoggedInUser }) => {
+    const { setAccessToken } = useContext(AuthContext);
+
     const emailRef = useRef();
     const passwordRef = useRef();
     const passwordConfirmRef = useRef();
+
     const [error, setError] =  useState('');
     const [loading, setLoading] =  useState(false);
+
     const history = useHistory();
 
     async function handleSubmit(e) {
@@ -29,7 +33,7 @@ const SignUp = ({ setLoggedInUser }) => {
                 setError("An account with this email already exists")
             }
             else {
-                await setLoggedInUser(response);
+                setAccessToken(response);
                 history.push('/');
             }
         }
