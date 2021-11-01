@@ -23,6 +23,10 @@ module.exports.handler = async (event, context, callback) => {
         callback(null, {
             statusCode: 500,
             body: JSON.stringify("Request failed"),
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': true,
+            }
         });
     }
 };

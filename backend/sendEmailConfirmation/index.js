@@ -20,6 +20,7 @@ const SendEmailConfirmation = require('./sendEmailConfirmation');
 const sendEmailConfirmation = new SendEmailConfirmation(emailDB, emailService)
 
 module.exports.handler = async event => {
+    
     const orderConfirmations = getOrderConfirmations(event.Records);
     await sendEmailConfirmation.process(orderConfirmations);
   };
