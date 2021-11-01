@@ -9,6 +9,7 @@ import { AuthContext } from '../../../contexts/AuthContext';
 
 import isLoggedIn from "../../../shared/generalUtils";
 import OrdersAPI from "../../../api/OrdersAPI";
+import CartItemsAPI from "../../../api/CartItemsAPI";
 
 const stripePromise = loadStripe('pk_test_51JpQj5FWucyQVser8v1mSuaSZNhk6OGo2VY6KDmigx6NwoOJCrqd3S8Aln0jrc6lXT7S8iWu1drwbJ5A2hrYR75U00Byajeu3x');
 
@@ -57,7 +58,15 @@ const PaymentForm = ({shippingData, backStep, nextStep, paymentIsLoading, setPay
             throw(new Error(error));
         }
         else{
-            setCartItems([]);
+            clearCart()
+        }
+    }
+
+    const clearCart = async () => {
+        setCartItems([]);
+    
+        if(isLoggedIn(accessToken)){
+            await CartItemsAPI.clearCartItems(accessToken);
         }
     }
 
