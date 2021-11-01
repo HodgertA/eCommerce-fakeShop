@@ -7,8 +7,8 @@ import { AuthContext } from '../../contexts/AuthContext';
 
 import useStyles from './styles';
 import isLoggedIn from "../../shared/generalUtils";
-import CartItemsAPI from "../../api/CartItemsAPI";
-import ProductsAPI from "../../api/ProductsAPI";
+import CartItemsAPI from "../../api/cartItemsAPI";
+import ProductsAPI from "../../api/productsAPI";
 
 const Products = () => {
     const classes = useStyles();
@@ -20,6 +20,7 @@ const Products = () => {
 
     useEffect(() => {
         const getProductsForSale = async () => {
+            
             const productsForSale = await ProductsAPI.getProducts();
             if(productsForSale){
                 setProducts(productsForSale);

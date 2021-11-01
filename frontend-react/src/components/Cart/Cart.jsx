@@ -3,7 +3,7 @@ import { Container, Typography, Button, Grid } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 import CartItem from './CartItem/CartItem'
-import CartItemsAPI from "../../api/CartItemsAPI"
+import CartItemsAPI from "../../api/cartItemsAPI"
 import { CartContext } from '../../contexts/CartContext';
 import { AuthContext } from '../../contexts/AuthContext';
 
