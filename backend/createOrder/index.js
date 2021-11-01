@@ -5,20 +5,26 @@ const tableName = process.env.ECOMMERCE_TABLE_NAME;
 const DB = new DynamoDB.DocumentClient();
 const dbService = new DbUtils(DB, tableName);
 
+const SQS = require('aws-sdk/clients/sqs');
+const sqs = new SQS();
+const queueUrl = process.env.SEND_CONFIRMATION_URL;
+
 const Stripe = require('stripe')
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-const { authenticateToken } = require('../common/authenticateToken');
-const uuidv1 = require('uuid/v1');
+const { authenticateToken } = require('../utils/authenticateToken');
+const { v1: uuidv1 } = require('uuid');
 
 module.exports.handler = async (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
+  const orderId = uuidv1();
   const user = authenticateToken(event.headers);
   const { amount, paymentMethodId, cartItems, shippingData } = JSON.parse(event.body)
   
   try {
       const payment = await processPayment(amount, paymentMethodId);
-      await createOrder(cartItems, shippingData, amount, payment, user);
+      await createOrder(orderId, cartItems, shippingData, amount, payment, user);
+      await sendConfirmationEmail({ orderId: orderId, cartItems: cartItems, shippingData: shippingData});
 
       callback(null, {
           statusCode: 200,
@@ -53,12 +59,10 @@ async function processPayment(amount, paymentMethodId){
   }
 }
 
-async function createOrder(cartItems, shippingData, amount, payment, user){
+async function createOrder(orderId, cartItems, shippingData, amount, payment, user){
   try {
-    const orderId = uuidv1();
     await addOrderData(orderId, shippingData, amount, payment, user);
-    await addOrderItems(orderId, cartItems)
-    sendConfirmationEmail();
+    await addOrderItems(orderId, cartItems);
   }
   catch(error){
     console.log(error);
@@ -97,7 +101,6 @@ async function addOrderData(orderId, shippingData, amount, payment, user){
 }
 
 async function addOrderItems(orderId, cartItems){
-  console.log(cartItems);
   for(cartItem of cartItems) {
     const orderItem = {
       PK: `orderItem#${orderId}`,
@@ -112,4 +115,15 @@ async function addOrderItems(orderId, cartItems){
   }
 }
 
-function sendConfirmationEmail(){}
+async function sendConfirmationEmail(orderConfirmation) {
+  try {
+    const params = {
+      MessageBody: JSON.stringify(orderConfirmation),
+      QueueUrl: queueUrl,
+    };
+    await sqs.sendMessage(params).promise();
+  }
+  catch (e) {
+    console.log(e);
+  }
+}
