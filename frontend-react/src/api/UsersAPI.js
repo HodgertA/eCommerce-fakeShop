@@ -13,6 +13,7 @@ class UsersAPI{
         }
         catch(e){
             console.log(e);
+            throw new Error("Failed to create an account.")
         }
     }
 }

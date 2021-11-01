@@ -10,15 +10,8 @@ const emailDB = new EmailDB(dbService);
 const messageProcess = new ProcessMessages(emailDB)
 
 module.exports.handler = async event => {
-
-  try {
     const messages = getEventMessages(event.Records);
     await messageProcess.process(messages);
-  }
-  catch(e) {
-    console.log(e);
-  }
-
 };
 
 function getEventMessages(records){

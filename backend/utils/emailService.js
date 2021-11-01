@@ -22,7 +22,7 @@ class EmailService {
             await this.SES.sendTemplatedEmail(params).promise();
         }
         catch (e){
-            console.log(e);
+            throw new Error('Something went wrong sending the email template.', { cause: e });
         }
      }
 }

@@ -13,7 +13,7 @@ class EmailDB {
       await this.dbService.putItem(recordToInsert);
     } 
     catch (e) {
-      console.log(e);
+      throw new Error('Something went wrong sending adding the failed email.', { cause: e });
     }
   }
 
@@ -39,7 +39,7 @@ class EmailDB {
       }
   
     } catch(e) {
-      console.log(e);
+      throw new Error('Something went wrong verifying the email address.', { cause: e });
     }
   }
   getVerifyEmailCondition(emailAddress) {

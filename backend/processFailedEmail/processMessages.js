@@ -18,9 +18,9 @@ class ProcessMessages {
       }
     }
 
-    catch (error) {
-      console.error(error);
-      throw new Error(error.message);
+    catch (e) {
+      console.error(e);
+      throw new Error('Something went processing the failed email.', { cause: e });
     }
   }
 

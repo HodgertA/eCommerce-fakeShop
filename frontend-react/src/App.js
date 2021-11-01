@@ -7,7 +7,7 @@ import { Navbar, Products, Cart, SignUp, Login, Checkout } from './components';
 import { CartContext } from './contexts/CartContext';
 import { AuthContext } from './contexts/AuthContext';
 
-import CartItemsAPI from "./api/CartItemsAPI"
+import CartItemsAPI from "./api/cartItemsAPI"
 import isLoggedIn from './shared/generalUtils';
 
 const App = () => {
@@ -44,8 +44,15 @@ const App = () => {
     useEffect(() => {
         const updateCartItems = async () => {
             if(isLoggedIn(accessToken)) {
-                const cart = await CartItemsAPI.getCartItems(accessToken);
-                setCartItems(cart);
+                
+                try { 
+                    const cart = await CartItemsAPI.getCartItems(accessToken);
+                    setCartItems(cart);
+                }
+                catch(e){
+                    console.log(e);
+                }
+                
             }
         }
         window.localStorage.setItem("accessToken", accessToken);

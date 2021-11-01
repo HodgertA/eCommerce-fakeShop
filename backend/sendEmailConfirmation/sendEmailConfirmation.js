@@ -15,20 +15,15 @@ class SendEmailConfirmation {
     }
     catch (e) {
       console.log(e);
+      throw new Error('Something went wrong sending a confirmation email.', { cause: e });
     }
   }
 
   async sendEmail(orderConfirmation) {
     const toAddress = [];
     toAddress.push(orderConfirmation.email);
-    console.log(orderConfirmation);
-
-    try {
-      await this.emailService.sendEmail(toAddress, orderConfirmation);
-    }
-    catch (e) {
-      console.log(e);
-    }
+    
+    await this.emailService.sendEmail(toAddress, orderConfirmation);
   }
 }
 module.exports = SendEmailConfirmation;

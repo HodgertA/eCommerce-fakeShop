@@ -64,8 +64,8 @@ async function createOrder(orderId, cartItems, shippingData, amount, payment, us
     await addOrderData(orderId, shippingData, amount, payment, user);
     await addOrderItems(orderId, cartItems);
   }
-  catch(error){
-    console.log(error);
+  catch(e){
+    console.log(e);
     await stripe.refunds.create({ payment_intent: payment.id });
     throw( new Error("Something went wrong. Please try again."));
   }

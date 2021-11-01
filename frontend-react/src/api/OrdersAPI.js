@@ -24,6 +24,7 @@ class OrdersAPI{
             return(response?.data);
         }
         catch(e){
+            console.log(e);
             if(e.response){
                 return {error: e.response.data};
             }

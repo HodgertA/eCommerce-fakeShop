@@ -13,6 +13,7 @@ class LoginAPI{
         }
         catch(e){
             console.log(e);
+            throw new Error("Failed to login");
         }
     }
 }

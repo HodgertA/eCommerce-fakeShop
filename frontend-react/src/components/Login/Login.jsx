@@ -3,9 +3,9 @@ import { Form, Button, Card, Alert } from 'react-bootstrap';
 import { Link, useHistory } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 
-import LoginAPI from "../../api/LoginAPI";
+import LoginAPI from "../../api/loginAPI";
 
-const Login = ({ setLoggedInUser }) => {
+const Login = () => {
     const { setAccessToken } = useContext(AuthContext);
 
     const emailRef = useRef();
@@ -33,7 +33,6 @@ const Login = ({ setLoggedInUser }) => {
             }
         }
         catch(e) {
-            console.log(e);
             setError("Failed to login.")
         }
         setLoading(false);

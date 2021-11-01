@@ -2,10 +2,10 @@ import React, { useRef, useState, useContext } from 'react';
 import { Form, Button, Card, Alert } from 'react-bootstrap';
 import { Link, useHistory } from 'react-router-dom'; 
 
-import UsersAPI from "../../api/UsersAPI";
+import UsersAPI from "../../api/usersAPI";
 import { AuthContext } from '../../contexts/AuthContext';
 
-const SignUp = ({ setLoggedInUser }) => {
+const SignUp = () => {
     const { setAccessToken } = useContext(AuthContext);
 
     const emailRef = useRef();
@@ -38,7 +38,6 @@ const SignUp = ({ setLoggedInUser }) => {
             }
         }
         catch(e) {
-            console.log(e);
             setError("Failed to create an account.")
         }
         setLoading(false);
