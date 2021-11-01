@@ -32,8 +32,8 @@ const SignUp = ({ setLoggedInUser }) => {
             if(response.emailExists){
                 setError("An account with this email already exists")
             }
-            else {
-                setAccessToken(response);
+            else if(response?.accessToken) {
+                setAccessToken(response.accessToken);
                 history.push('/');
             }
         }

@@ -24,11 +24,11 @@ const Login = ({ setLoggedInUser }) => {
             setLoading(true);
             const response = await LoginAPI.loginUser(emailRef.current.value, passwordRef.current.value);
 
-            if(response.loginFailed){
+            if(response?.loginFailed) {
                 setError(response.loginFailed)
             }
-            else {
-                setAccessToken(response)
+            else if(response?.accessToken) {
+                setAccessToken(response.accessToken);
                 history.push('/');
             }
         }
