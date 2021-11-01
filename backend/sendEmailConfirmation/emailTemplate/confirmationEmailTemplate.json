@@ -1,0 +1,8 @@
+{
+    "Template": {
+      "TemplateName": "eCommerce-confirmation-template",
+      "SubjectPart": "eCommerce-fakeShop: Order Confirmation",
+      "HtmlPart": "<!DOCTYPE html>\r\n<html>\r\n    <head>\r\n        <meta charset=\"utf-8\" \/>\r\n        <title>Order Confirmation<\/title>\r\n    <\/head>\r\n    <body>\r\n        <h2><span style=\"color: #333399;\"><strong>Hi {{firstName}}, thanks for your purchase!&nbsp; ;)<\/strong><\/span><\/h2>\r\n        <p style=\"font-size: 1.2em;\">Below are the details of your order:<\/p>\r\n  <p>&nbsp;<\/p>\r\n        <p>&nbsp;<\/p>\r\n         <p>Order ID: {{orderId}}<\/p>\r\n                <p>Shipping Details<\/p>\r\n        <p>============<\/p>\r\n        <p>{{firstName}} {{lastName}}<\/p>\r\n        <p>{{address}}<\/p>\r\n        <p>{{city}} {{province}}, {{zip}}<\/p>\r\n        <p>{{country}}<\/p>\r\n        <p>&nbsp;<\/p>\r\n        <p>&nbsp;<\/p>\r\n        <p>=======================================<\/p>\r\n        <p>Thanks again :)<\/p>\r\n        <p>Website URL: <a href=\"https:\/\/www.ecommerce-fakeshop.ca\/\">https:\/\/www.ecommerce-fakeshop.ca\/<\/a><\/p>\r\n    <\/body>\r\n\r\n<\/html>",
+      "TextPart": "Hi {{firstName}}, thanks for your purchase! ;)\r\n\r\nBelow are the details of your order:\r\n\r\nOrder ID: {{orderId}}\nShipping Details\r\n============\r\n{{firstName}} {{lastName}}\r\n{{address}}\r\n{{city}} {{province}}, {{zip}}\r\n{{country}}\r\n\r\n=======================================\r\nThanks again :)\r\nWebsite URL: https:www.ecommerce-fakeshop.ca\r\n"
+    }
+}

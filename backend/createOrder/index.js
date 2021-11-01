@@ -24,7 +24,7 @@ module.exports.handler = async (event, context, callback) => {
   try {
       const payment = await processPayment(amount, paymentMethodId);
       await createOrder(orderId, cartItems, shippingData, amount, payment, user);
-      await sendConfirmationEmail({ orderId: orderId, cartItems: cartItems, shippingData: shippingData});
+      await sendConfirmationEmail(orderId, shippingData);
 
       callback(null, {
           statusCode: 200,
@@ -90,7 +90,7 @@ async function addOrderData(orderId, shippingData, amount, payment, user){
     email: shippingData.email,
     firstName: shippingData.firstName,
     lastName: shippingData.lastName,
-    address: shippingData.address1,
+    address: shippingData.address,
     city: shippingData.city,
     province: shippingData.province,
     zip: shippingData.zip,
@@ -115,7 +115,10 @@ async function addOrderItems(orderId, cartItems){
   }
 }
 
-async function sendConfirmationEmail(orderConfirmation) {
+async function sendConfirmationEmail(orderId, shippingData) {
+ const orderConfirmation = shippingData;
+ orderConfirmation.orderId = orderId;
+
   try {
     const params = {
       MessageBody: JSON.stringify(orderConfirmation),

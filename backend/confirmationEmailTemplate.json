@@ -1,7 +1,0 @@
-{
-    "Template": {
-      "TemplateName": "eCommerce-confirmation-template",
-      "SubjectPart": "eCommerce-fakeShop: Order Confirmation",
-      "TextPart": "Your order has been confirmed"
-    }
-}

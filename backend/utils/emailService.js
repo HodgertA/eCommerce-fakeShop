@@ -6,9 +6,8 @@ class EmailService {
         this.configurationSetName = configurationSetName;
     }
 
-    async sendEmail(destinationList) {
+    async sendEmail(destinationList, templateData) {
         var params = {};
-        var templateData = {};
         var desination = {
             "BccAddresses": destinationList
         }
@@ -24,7 +23,6 @@ class EmailService {
         }
         catch (e){
             console.log(e);
-            const errorMsg = "Something went wrong in sending an email";
         }
      }
 }

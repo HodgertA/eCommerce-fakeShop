@@ -17,7 +17,7 @@ const AddressForm = ({ next }) => {
                         <FormInput name='firstName' label='First name'/>
                         <FormInput name='lastName' label='Last name'/>
                         <FormInput name='email' label='Email'/>
-                        <FormInput name='address1' label='Address'/>
+                        <FormInput name='address' label='Address'/>
                         <FormInput name='city' label='City'/>
                         <FormInput name='zip' label='Postal code / ZIP'/>
                         <FormInput name='province' label='Province / State'/>
