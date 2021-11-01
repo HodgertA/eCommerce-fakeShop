@@ -1,4 +1,4 @@
-const { authenticateToken } = require('../common/authenticateToken');
+const { authenticateToken } = require('../utils/authenticateToken');
 
 const { getCartItems } = require('../getCartItems/index');
 const { deleteCartItem } = require('../deleteCartItem/index');

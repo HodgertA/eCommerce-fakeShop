@@ -5,7 +5,7 @@ const tableName = process.env.ECOMMERCE_TABLE_NAME;
 const DB = new DynamoDB.DocumentClient();
 const dbService = new DbUtils(DB, tableName);
 
-const { authenticateToken } = require('../common/authenticateToken');
+const { authenticateToken } = require('../utils/authenticateToken');
 
 module.exports.handler = async (event, context, callback) => {
     console.log(event);
