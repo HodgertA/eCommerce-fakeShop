@@ -1,5 +1,6 @@
 import React from 'react'
 import { Typography, Button, Card, CardActions, CardContent, CardMedia } from '@material-ui/core'
+import "./cardAction.css"
 
 import useStyles from './styles';
 
@@ -13,7 +14,7 @@ const CartItem = ({item, onUpdateCartQty, onRemoveFromCart}) => {
                 <Typography variant="h4">{item.name}</Typography>
                 <Typography variant="h5">${(item.price*item.quantity).toFixed(2)}</Typography>
             </CardContent>
-            <CardActions className={classes.cardActions}>
+            <CardActions className={classes.cardActions}xs>
                 <div className={classes.buttons}>
                     <Button type="button" size="small" onClick={() => onUpdateCartQty(item.productId, -1)}>-</Button>
                     <Typography>{item.quantity}</Typography>

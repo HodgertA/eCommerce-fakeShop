@@ -79,7 +79,7 @@ const Cart = () => {
         <>
             <Grid container spacing={3}>
                 {cartItems.map((item) => (
-                    <Grid item xs={12} sm={4} key={item.productId}>
+                    <Grid item xs={12} sm={6} md={4} key={item.productId}>
                         <CartItem item={item} onUpdateCartQty={handleUpdateCartQty} onRemoveFromCart={handleRemoveFromCart}/>
                     </Grid>
                 ))}
@@ -88,7 +88,7 @@ const Cart = () => {
                 <Typography variant="h4">
                     Subtotal: ${calculateSubtotal().toFixed(2)}
                 </Typography>
-                <div>
+                <div className={classes.buttons}>
                     <Button className={classes.emptyButton} size="large" type="button" variant="contained" color="secondary" onClick={handleEmptyCart}>Empty Cart</Button>
                     <Button component={Link} to ="/checkout" className={classes.checkoutButton} size="large" type="button" variant="contained" color = "primary">Checkout</Button>
 
