@@ -51,6 +51,30 @@ functions:
           method: get
           cors: true
 
+  getOrders:
+    handler: getOrders/index.handler
+    role: 
+      Fn::GetAtt:
+        - queryItemRole
+        - Arn
+    events:
+      - http:
+          path: orders
+          method: get
+          cors: true
+
+  getOrderDetails:
+    handler: getOrderDetails/index.handler
+    role: 
+      Fn::GetAtt:
+        - queryItemRole
+        - Arn
+    events:
+      - http:
+          path: orders/{orderId}
+          method: get
+          cors: true
+
   updateCartItem:
     handler: updateCartItem/index.handler
     role: 

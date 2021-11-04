@@ -1,6 +1,6 @@
 # eCommerce-fakeShop
 ## Introduction
-www.ecommerce-fakeShop.ca
+www.ecommerce-fakeshop.ca
 
 This is an eCommerce store web-application, with the frontend built in Javascript and React, and the backend built with NodeJS hosted using AWS.
 
@@ -55,39 +55,6 @@ POST /orders/{orderId}
 <br>
 
 *Below are sample requests and responsesss for each endpoint, ($ specifies an optional parameter)*
-<br>
-
-### POST /users
-Request
-```
-{
-    "email": "test@ecommerce-fakeshop.ca",
-    "password": "password1!"
-}
-```
-
-Response
-```
-{
-    accessToken: `{accessToken}`
-}
-```
-<br>
-
-### POST /login
-Request
-```
-{
-    "email": "test@ecommerce-fakeshop.ca",
-    "password": "password1!"
-}
-```
-Response
-```
-{
-    accessToken: "{accessToken}"
-}
-```
 <br>
 
 ### GET /products
@@ -221,7 +188,14 @@ Authorization: "Bearer {accessToken}"
 ```
 Response
 ```
-"TO-DO"
+[
+  {
+    "orderId": "111",
+    "status": "paid",
+    "createdAt": 1635737407,
+    "amount": 1500
+  }
+]
 ```
 <br>
 
@@ -232,8 +206,67 @@ Authorization: "Bearer {accessToken}"
 ```
 Response
 ```
-"TO-DO"
+[
+  {
+    "quantity": 1,
+    "orderId": "111",
+    "name": "Honey Dill Sauce",
+    "productId": "123"
+  },
+  {
+    "quantity": 1,
+    "orderId": 111,
+    "name": "Apples",
+    "productId": "321"
+  }
+]
 ```
+<br>
+
+### POST /users
+Request
+```
+{
+    "email": "test@ecommerce-fakeshop.ca",
+    "password": "password1!"
+}
+```
+Response
+```
+------ if success -------
+{
+    accessToken: "{accessToken}"
+}
+
+--------- else ----------
+{
+  "emailExists": true
+}
+```
+<br>
+
+### POST /login
+Request
+```
+{
+    "email": "test@ecommerce-fakeshop.ca",
+    "password": "password1!"
+}
+```
+Response
+```
+------ if success -------
+{
+    accessToken: "{accessToken}"
+}
+
+--------- else ----------
+{
+  "loginFailed": "{message}"
+}
+
+```
+
 <br><br><br>
 
 ## DynamoDB Design
@@ -266,7 +299,6 @@ Response
 <br><br><br>
 
 ## Deployment
-<br>
 
 ### Environment Variables
 Create a file named config.yml with the following variables
