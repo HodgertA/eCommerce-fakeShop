@@ -1,7 +1,7 @@
 import axios from 'axios';
 require('dotenv').config();
 const baseURL = process.env.REACT_APP_BASE_URL;
-const API = baseURL + '/orders';
+const API = baseURL + '/orders/';
 
 class OrdersAPI{
     static async processCheckout(paymentMethodId, cartItems, shippingData, amount, token){
@@ -31,6 +31,34 @@ class OrdersAPI{
                 return {error: "Unexpected error. If your card has been charged and you did not recieve a confimation email, please contact us."}
             }
             
+        }
+    }
+
+    static async getOrders(token){
+        const headers = {
+            'Authorization': `Bearer ${token}`
+        };
+        try{
+            const response = await axios.get(API, {headers: headers});
+            return (response?.data);
+        }
+        catch(e){
+            console.log(e);
+        }
+    }
+
+    static async getOrderDetails(orderId, token){
+        const headers = {
+            'Authorization': `Bearer ${token}`
+        };
+        const url = API + orderId;
+
+        try {
+            const response = await axios.get(url, {headers: headers});
+            return (response?.data);
+        }
+        catch(e){
+            console.log(e);
         }
     }
 }
