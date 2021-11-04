@@ -10,7 +10,7 @@ const tableName = process.env.USERPOOL_TABLE_NAME;
 const DB = new DynamoDB.DocumentClient();
 const dbService = new DbUtils(DB, tableName);
 
-const { isEmptyObject } = require('common/utils/objectUtils');
+const { isEmptyObject } = require('../utils/objectUtils');
 
 module.exports.handler = async (event, context, callback) => {
     context.callbackWaitsForEmptyEventLoop = false;
