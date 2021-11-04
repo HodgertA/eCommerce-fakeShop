@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { Navbar, Products, Cart, SignUp, Login, Checkout } from './components';
+import { Navbar, Products, Cart, SignUp, Login, Checkout, AccountDashboard } from './components';
 import { CartContext } from './contexts/CartContext';
 import { AuthContext } from './contexts/AuthContext';
 
@@ -94,6 +94,10 @@ const App = () => {
 
                             <Route exact path="/checkout">
                                 <Checkout />
+                            </Route>
+
+                            <Route exact path="/myAccount">
+                                <AccountDashboard />
                             </Route>
                             
                         </Switch>
