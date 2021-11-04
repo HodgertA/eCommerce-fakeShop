@@ -5,6 +5,24 @@ www.ecommerce-fakeshop.ca
 This is an eCommerce store web-application, with the frontend built in Javascript and React, and the backend built with NodeJS hosted using AWS.
 
 This app includes the features of a webshop but also includes *user authentication*, *email confirmation*, and *payments*
+<br><br>
+
+
+
+*Use this card for payments*
+| Card# | Expiry Date | CVC |
+| :---- | :---- | :---- |
+| `4242 4242 4242 4242`| `04/24` |  `242`|
+
+
+*Sample User*
+| email | password |
+| :---- | :---- |
+| `test@ecommerce-fakeshop.ca`| `test123!`|
+<br>
+
+
+
 
 #### **Implemented User Stories**
 As a shopper, I would like to:
