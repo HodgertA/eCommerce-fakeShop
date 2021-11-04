@@ -27,20 +27,21 @@ const SignUp = () => {
         try {
             setError('');
             setLoading(true);
+            
             const response = await UsersAPI.regitserUser(emailRef.current.value, passwordRef.current.value)
-            console.log(response);
             if(response.emailExists){
                 setError("An account with this email already exists")
+                setLoading(false);
             }
             else if(response?.accessToken) {
                 setAccessToken(response.accessToken);
+                setLoading(false);
                 history.push('/');
             }
         }
         catch(e) {
             setError("Failed to create an account.")
         }
-        setLoading(false);
     }
 
     return (

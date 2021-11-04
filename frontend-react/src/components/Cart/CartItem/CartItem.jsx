@@ -14,7 +14,7 @@ const CartItem = ({item, onUpdateCartQty, onRemoveFromCart}) => {
                 <Typography variant="h4">{item.name}</Typography>
                 <Typography variant="h5">${(item.price*item.quantity).toFixed(2)}</Typography>
             </CardContent>
-            <CardActions className={classes.cardActions}xs>
+            <CardActions className={classes.cardActions}>
                 <div className={classes.buttons}>
                     <Button type="button" size="small" onClick={() => onUpdateCartQty(item.productId, -1)}>-</Button>
                     <Typography>{item.quantity}</Typography>

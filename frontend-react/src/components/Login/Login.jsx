@@ -26,16 +26,17 @@ const Login = () => {
 
             if(response?.loginFailed) {
                 setError(response.loginFailed)
+                setLoading(false);
             }
             else if(response?.accessToken) {
                 setAccessToken(response.accessToken);
+                setLoading(false);
                 history.push('/');
             }
         }
         catch(e) {
             setError("Failed to login.")
         }
-        setLoading(false);
     }
 
     return (

@@ -36,7 +36,7 @@ const Navbar = () => {
                 <Toolbar>
                     <Typography component={Link} to="/" variant="h6" className={classes.title} color="inherit">
                         <img src={logo} alt="Commerce.js" height="25px" className={classes.image} />
-                        Aidan's Faux-Shop
+                        eCommerce-FakeShop
                     </Typography>
                     <div className={classes.grom} />
                     {isLoggedIn(accessToken) ? (
