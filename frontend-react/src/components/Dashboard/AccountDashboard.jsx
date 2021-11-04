@@ -24,11 +24,15 @@ const AccountDashboard = () => {
         const getOrders = async () => {
             if( isLoggedIn(accessToken) ) {
                 const response = await OrdersAPI.getOrders(accessToken);
-    
-                setOrders(response);
+                setOrders(sortOrders(response));
             }
             setIsOrdersLoading(false);
         }
+        const sortOrders = (orderData) => {
+            orderData.sort((a,b) => (a.createdAt > b.createdAt) ? -1 : ((b.createdAt > a.createdAt) ? 1 : 0))
+            return orderData;
+        }
+
         getOrders();
     }, [accessToken])
 
