@@ -45,7 +45,7 @@ const Navbar = () => {
                                     My Account
                                 </Link>
                             </Typography>
-                        ) : location.pathname !== '/register' &&  location.pathname !== '/login' && location.pathname !== '/checkout' ?(
+                        ) : location.pathname !== '/register' &&  location.pathname !== '/login' && location.pathname !== '/checkout' && location.pathname !== '/myAccount' ?(
                             <Typography className="mr-2">
                                 <Link to="/register">
                                     Sign Up
