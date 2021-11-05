@@ -36,10 +36,10 @@ const Navbar = () => {
                 <Toolbar>
                     <Typography component={Link} to="/" variant="h6" className={classes.title} color="inherit">
                         <img src={logo} alt="Commerce.js" height="25px" className={classes.image} />
-                        eCommerce-FakeShop
+                        Faux Shoppe
                     </Typography>
                     <div className={classes.grom} />
-                    {isLoggedIn(accessToken) ? (
+                    {isLoggedIn(accessToken) && location.pathname !== '/myAccount'? (
                             <Typography className="mr-2">
                                 <Link to="/myAccount">
                                     My Account
