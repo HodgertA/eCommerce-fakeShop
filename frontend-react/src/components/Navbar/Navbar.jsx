@@ -13,7 +13,6 @@ import isLoggedIn from "../../shared/generalUtils";
 const Navbar = () => {
     const classes = useStyles();
     const location = useLocation();
-
     const { accessToken } = useContext(AuthContext);
     const { cartItems } = useContext(CartContext);
 
@@ -34,19 +33,19 @@ const Navbar = () => {
         <>
             <AppBar position="fixed" className={classes.appBar} color="inherit">
                 <Toolbar>
-                    <Typography component={Link} to="/" variant="h6" className={classes.title} color="inherit">
+                    <Typography component={Link} to="/" variant="h6" className={classes.title} color="secondary">
                         <img src={logo} alt="Commerce.js" height="25px" className={classes.image} />
-                        eCommerce-FakeShop
+                        Aidan's Magic Goods
                     </Typography>
                     <div className={classes.grom} />
                     {isLoggedIn(accessToken) ? (
                             <Typography className="mr-2">
-                                <Link to="/myAccount">
+                                <Link to="/myAccount" color="secondary">
                                     My Account
                                 </Link>
                             </Typography>
-                        ) : location.pathname !== '/register' &&  location.pathname !== '/login' && location.pathname !== '/checkout' ?(
-                            <Typography className="mr-2">
+                        ) : location.pathname !== '/register' &&  location.pathname !== '/login' && location.pathname !== '/checkout' && location.pathname !== '/myAccount' ?(
+                            <Typography className="mr-2" color="secondary">
                                 <Link to="/register">
                                     Sign Up
                                 </Link>
@@ -57,8 +56,8 @@ const Navbar = () => {
                         )}
                     {location.pathname === '/' && (
                         <div className={classes.button}>
-                            <IconButton component={Link} to="/cartItems" aria-label="Show cart items" color="inherit">
-                                <Badge badgeContent={numItemsInCart()} color="secondary">
+                            <IconButton component={Link} to="/cartItems" color="secondary" aria-label="Show cart items" >
+                                <Badge badgeContent={numItemsInCart()}>
                                     <ShoppingBasketOutlined />
                                 </Badge>
                             </IconButton>
