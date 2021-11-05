@@ -22,7 +22,7 @@ module.exports.handler = async (event, context, callback) => {
   const { amount, paymentMethodId, cartItems, shippingData } = JSON.parse(event.body)
   
   try {
-      const payment = await processPayment(amount, paymentMethodId);
+      const payment = await processPayment(Math.round(amount), paymentMethodId);
       await createOrder(orderId, cartItems, shippingData, amount, payment, user);
       await sendConfirmationEmail(orderId, shippingData);
 
