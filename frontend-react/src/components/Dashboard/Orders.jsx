@@ -7,7 +7,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 
 const Orders = ( {orders, nextStep, isLoading, setOrderItems} ) => {
 
-    const { accessToken, setAccessToken } = useContext(AuthContext);
+    const { accessToken } = useContext(AuthContext);
 
     const formattedDate = (epochTime) => {
         const date = new Date(epochTime * 1000);
