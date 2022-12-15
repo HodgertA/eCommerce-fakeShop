@@ -1,0 +1,2 @@
+hello
+i am testing initializing a git repo inside the folder of an exisiting git repo
